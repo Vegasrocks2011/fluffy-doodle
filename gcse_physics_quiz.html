@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GCSE Physics 2H Revision Quiz</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f8fafc; min-height: 100vh; padding: 24px 16px; }
+    .card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); max-width: 700px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .header-title { font-size: 13px; color: #6366f1; font-weight: 700; }
+    .header-count { font-size: 13px; color: #64748b; }
+    .progress-track { background: #e2e8f0; border-radius: 6px; height: 6px; margin-bottom: 20px; }
+    .progress-bar { background: #6366f1; border-radius: 6px; height: 6px; transition: width 0.3s; }
+    .badge { display: inline-block; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+    .badge-topic { background: #ede9fe; color: #7c3aed; }
+    .badge-marks { background: #dbeafe; color: #1d4ed8; margin-left: 8px; }
+    .question { color: #1e293b; font-size: 15px; font-weight: 600; line-height: 1.6; margin-bottom: 20px; }
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .option-btn { text-align: left; padding: 12px 16px; border-radius: 10px; border: 2px solid #e2e8f0; background: #f1f5f9; color: #1e293b; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .option-btn:hover:not(:disabled) { border-color: #6366f1; background: #ede9fe; }
+    .option-btn.correct { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+    .option-btn.wrong { background: #fee2e2; border-color: #dc2626; color: #b91c1c; }
+    .option-btn:disabled { cursor: default; }
+    .explanation { background: #f0fdf4; border-radius: 10px; padding: 14px; border: 1px solid #bbf7d0; margin-top: 8px; }
+    .explanation-title { font-weight: 700; color: #15803d; margin-bottom: 4px; font-size: 14px; }
+    .explanation-text { color: #166534; font-size: 14px; }
+    textarea { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 14px; font-family: inherit; resize: vertical; margin-bottom: 4px; }
+    textarea:focus { outline: none; border-color: #6366f1; }
+    .hint { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+    .next-btn { width: 100%; padding: 12px 0; background: #6366f1; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; font-family: inherit; }
+    .next-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .footer-note { text-align: center; margin-top: 12px; font-size: 12px; color: #94a3b8; }
+
+    /* Review phase */
+    .review-q { background: #f8fafc; border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .review-label { font-size: 13px; color: #6366f1; font-weight: 700; margin-bottom: 4px; }
+    .review-question { margin: 0 0 10px; color: #1e293b; font-weight: 600; font-size: 14px; }
+    .your-answer { background: #e0f2fe; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+    .your-answer-title { font-size: 12px; font-weight: 700; color: #0369a1; margin-bottom: 4px; }
+    .your-answer-text { font-size: 13px; color: #0c4a6e; }
+    .model-answer { background: #f0fdf4; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .model-answer-title { font-size: 12px; font-weight: 700; color: #166534; margin-bottom: 4px; }
+    .model-answer-text { font-size: 13px; color: #14532d; }
+    .mark-points { margin: 8px 0 0; padding-left: 18px; }
+    .mark-points li { font-size: 12px; color: #15803d; margin-bottom: 2px; }
+    .self-mark-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .self-mark-label { font-size: 13px; color: #64748b; font-weight: 600; }
+    .mark-btn { padding: 4px 12px; border-radius: 6px; border: 2px solid #e2e8f0; background: white; color: #374151; font-weight: 700; cursor: pointer; font-size: 13px; font-family: inherit; }
+    .mark-btn.selected { border-color: #6366f1; background: #6366f1; color: white; }
+    .finish-btn { width: 100%; padding: 12px 0; background: #6366f1; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; font-family: inherit; }
+    .finish-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* Results phase */
+    .results-title { text-align: center; color: #1e293b; margin: 0 0 8px; }
+    .results-subtitle { text-align: center; color: #64748b; margin: 0 0 24px; font-size: 14px; }
+    .grade-circle { display: flex; align-items: center; justify-content: center; width: 120px; height: 120px; border-radius: 50%; font-size: 56px; font-weight: 900; color: white; margin: 0 auto 16px; }
+    .score-text { text-align: center; font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 32px; }
+    .section-title { color: #1e293b; font-size: 18px; margin: 0 0 12px; }
+    .topic-row { background: #f1f5f9; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; }
+    .topic-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .topic-name { font-weight: 600; color: #1e293b; font-size: 14px; }
+    .topic-score { font-weight: 700; font-size: 14px; }
+    .topic-track { background: #e2e8f0; border-radius: 6px; height: 8px; }
+    .topic-fill { border-radius: 6px; height: 8px; transition: width 0.5s; }
+    .weak-box { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .weak-title { color: #c2410c; margin: 0 0 10px; font-size: 16px; }
+    .weak-list { margin: 0; padding-left: 20px; color: #7c2d12; }
+    .weak-list li { margin-bottom: 4px; font-size: 14px; }
+    .tips-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px; }
+    .tips-title { color: #15803d; margin: 0 0 8px; font-size: 16px; }
+    .tips-list { margin: 0; padding-left: 20px; color: #166534; }
+    .tips-list li { margin-bottom: 4px; font-size: 13px; }
+    .restart-btn { margin-top: 24px; width: 100%; padding: 12px 0; background: #3b82f6; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    h2 { color: #1e293b; margin-top: 0; }
+    p.review-intro { color: #64748b; font-size: 14px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<div class="card" id="app"></div>
+
+<script>
+const questions = [
+  { id:1, topic:"Static Electricity & Electric Fields", question:"Figure 1 shows three charged objects X, Y and Z. Y has a positive charge and is held stationary. X is attracted towards Y, and Z moves away from Y. Which row is correct for the charges on X and Z?", options:["A: X = negative, Z = negative","B: X = negative, Z = positive","C: X = positive, Z = negative","D: X = positive, Z = positive"], correct:1, explanation:"X is attracted to Y (positive), so X must be negative (opposite charges attract). Z moves away from Y, so Z must be positive (like charges repel).", marks:1 },
+  { id:2, topic:"Static Electricity & Electric Fields", question:"Give the meaning of the term 'electric field'.", type:"written", markPoints:["A region/area/volume where a (electric) charge experiences a force"], marks:1, modelAnswer:"A region where a charge experiences a force." },
+  { id:3, topic:"Static Electricity & Electric Fields", question:"A graph shows electric field strength (N/C) against distance x (cm) for a point charge. The equation is: electric field strength = A / x². At x = 3 cm, the electric field strength reads 20,000 N/C from the graph. Calculate A.", type:"calculation", marks:2, modelAnswer:"A = electric field strength × x² = 20,000 × 3² = 20,000 × 9 = 180,000 N cm²/C" },
+  { id:4, topic:"Circuits", question:"In a parallel circuit, 0.10 A flows from the battery into a junction. Two branches each carry 0.05 A. What is the current at point P (the return wire to the battery)?", options:["A: 0.05 A","B: 0.10 A","C: 0.15 A","D: 0.20 A"], correct:1, explanation:"In a parallel circuit, the total current from the battery equals the sum of branch currents. Both branches carry 0.05 A, so the total = 0.05 + 0.05 = 0.10 A returns to the battery at P.", marks:1 },
+  { id:5, topic:"Circuits", question:"Students investigate resistors in parallel. With 1 resistor: current = 9.1 mA, voltage = 6.00 V. Predict the current when there are 4 resistors in the circuit.", type:"calculation", marks:1, modelAnswer:"Each resistor adds 9.1 mA. With 4 resistors: 4 × 9.1 = 36.4 mA" },
+  { id:6, topic:"Circuits", question:"Using V = IR, calculate the resistance of 1 resistor when V = 6.00 V and I = 9.1 mA.", type:"calculation", marks:3, modelAnswer:"R = V/I = 6.00 / (9.1 × 10⁻³) = 659 Ω ≈ 660 Ω" },
+  { id:7, topic:"Density & States of Matter", question:"A copper coil has a mass of 14.1 g. Density of copper = 8.96 g/cm³. Using ρ = m/V, calculate the volume of the copper wire.", type:"calculation", marks:3, modelAnswer:"V = m/ρ = 14.1 / 8.96 = 1.57 cm³" },
+  { id:8, topic:"Density & States of Matter", question:"Solid aluminium has density 2.70 g/cm³ and liquid aluminium has density 2.38 g/cm³. Explain this difference in terms of particle arrangement.", type:"written", marks:2, markPoints:["Density of solid is greater than density of liquid","Distance between particles in solid is less / particles more closely packed in solid"], modelAnswer:"In solid aluminium, the particles are more closely packed together than in liquid aluminium. This means there is more mass per unit volume in the solid, giving it a higher density." },
+  { id:9, topic:"Density & States of Matter", question:"Calculate the thermal energy needed to change 60.0 g of water to steam at its boiling point. Specific latent heat of vaporisation L = 2.26 × 10⁶ J/kg. Use Q = m × L.", type:"calculation", marks:2, modelAnswer:"Q = 0.060 × 2.26 × 10⁶ = 1.36 × 10⁵ J (136,000 J)" },
+  { id:10, topic:"Pressure", question:"An ice skater has pressure = 4.8 × 10⁷ Pa on the ice, and blade area = 1.2 × 10⁻⁵ m². Calculate the force using force = pressure × area. Give your answer to 2 significant figures.", type:"calculation", marks:3, modelAnswer:"Force = 4.8 × 10⁷ × 1.2 × 10⁻⁵ = 576 N → 580 N (2 s.f.)" },
+  { id:11, topic:"Pressure", question:"Pressure at sea level = 104 kPa. Pressure at 2500 m = 74 kPa. Calculate the percentage change in pressure from sea level to 2500 m.", type:"calculation", marks:2, modelAnswer:"% change = (74 - 104)/104 × 100 = -30/104 × 100 = -28.8% ≈ -29%" },
+  { id:12, topic:"Magnetism", question:"In a wire in a magnetic field: current = 3.2 A, length = 0.042 m, force = 0.078 N. Calculate the magnetic flux density using F = B × I × l.", type:"calculation", marks:2, modelAnswer:"B = F/(I×l) = 0.078 / (3.2 × 0.042) = 0.078 / 0.1344 = 0.58 T" },
+  { id:13, topic:"Moments & Gears", question:"Which is a unit for the moment of a force?", options:["A: N/m²","B: N/m","C: N m","D: N m²"], correct:2, explanation:"Moment = force × distance, so units = N × m = N m", marks:1 },
+  { id:14, topic:"Moments & Gears", question:"A claw hammer: F₁ = 11.4 N, d₁ = 24.5 cm, d₂ = 3.7 cm. Using the principle of moments, calculate F₂.", type:"calculation", marks:3, modelAnswer:"F₁ × d₁ = F₂ × d₂ → F₂ = (11.4 × 24.5) / 3.7 = 279.3 / 3.7 = 75.5 N ≈ 75 N" },
+  { id:15, topic:"Energy & Work", question:"An athlete pushes a sled with 645 N doing 7440 J of work. Calculate the distance moved. Give your answer to an appropriate number of significant figures.", type:"calculation", marks:3, modelAnswer:"distance = work/force = 7440 / 645 = 11.5 m (3 s.f.)" },
+  { id:16, topic:"Energy & Work", question:"A motor lifts masses. GPE gained = 5.8 J, total mass = 320 g, g = 10 N/kg. Calculate the vertical height the masses travelled through using GPE = m × g × h.", type:"calculation", marks:2, modelAnswer:"h = GPE / (m × g) = 5.8 / (0.320 × 10) = 5.8 / 3.2 = 1.8 m" },
+  { id:17, topic:"Circuits", question:"Which of these equations is correct?", options:["A: time = charge / current","B: time = charge × current","C: time = power / energy","D: time = power × energy"], correct:0, explanation:"From Q = I × t, rearranging gives t = Q/I = charge/current.", marks:1 },
+  { id:18, topic:"Thermal Physics", question:"Which change of state describes sublimation?", options:["A: from gas to liquid","B: from liquid to solid","C: from solid to gas","D: from solid to liquid"], correct:2, explanation:"Sublimation is the direct change from solid to gas, without passing through the liquid phase (e.g. dry ice/CO₂).", marks:1 },
+  { id:19, topic:"Thermal Physics", question:"A storage heater brick receives 210 kJ of energy. Mass = 5.8 kg, specific heat capacity = 860 J/kg K. Calculate the temperature increase using ΔQ = m × c × Δθ.", type:"calculation", marks:2, modelAnswer:"Δθ = ΔQ / (m × c) = 210,000 / (5.8 × 860) = 210,000 / 4988 = 42 °C" },
+  { id:20, topic:"Electromagnetic Induction", question:"A magnet is dropped through a coil connected to a voltmeter. Explain why the voltmeter shows a reading as the magnet passes through (3 marks).", type:"written", marks:3, markPoints:["Magnetic field lines are cut/intercepted by the coil","This induces a voltage/current in the coil","The voltmeter measures this induced voltage / reading changes as magnet passes through"], modelAnswer:"As the magnet moves through the coil, the magnetic field lines are cut by the coil. This changing magnetic field induces a voltage (EMF) in the coil. The voltmeter measures this induced voltage, which changes in magnitude and direction as the magnet passes through." }
+];
+
+const gradeThresholds = [
+  {grade:"9",min:90},{grade:"8",min:80},{grade:"7",min:70},{grade:"6",min:60},
+  {grade:"5",min:50},{grade:"4",min:40},{grade:"3",min:30},{grade:"2",min:20},{grade:"1",min:0}
+];
+const gradeColors = {"9":"#1a7a3a","8":"#2d9e52","7":"#3bb563","6":"#f59e0b","5":"#f97316","4":"#ea580c","3":"#dc2626","2":"#b91c1c","1":"#7f1d1d"};
+
+function getGrade(pct) {
+  for (const t of gradeThresholds) if (pct >= t.min) return t.grade;
+  return "U";
+}
+
+// State
+let state = {
+  phase: "quiz", // quiz | review | results
+  current: 0,
+  answers: {},       // mcq answers
+  textInputs: {},    // written + calc answers
+  selfMarks: {},     // self-marked scores
+  showExplanation: false
+};
+
+const totalMarks = questions.reduce((s, q) => s + q.marks, 0);
+
+function render() {
+  const app = document.getElementById("app");
+  if (state.phase === "quiz") app.innerHTML = renderQuiz();
+  else if (state.phase === "review") app.innerHTML = renderReview();
+  else app.innerHTML = renderResults();
+  attachEvents();
+}
+
+function renderQuiz() {
+  const q = questions[state.current];
+  const progress = (state.current / questions.length) * 100;
+  const answered = state.answers[q.id] !== undefined;
+
+  let body = "";
+
+  if (!q.type) {
+    // MCQ
+    body = `<div class="options">`;
+    q.options.forEach((opt, i) => {
+      let cls = "option-btn";
+      if (answered) {
+        if (i === q.correct) cls += " correct";
+        else if (i === state.answers[q.id]) cls += " wrong";
+      }
+      body += `<button class="${cls}" data-mcq="${i}" ${answered ? "disabled" : ""}>${opt}</button>`;
+    });
+    body += `</div>`;
+    if (state.showExplanation) {
+      body += `<div class="explanation"><div class="explanation-title">Explanation:</div><div class="explanation-text">${q.explanation}</div></div>`;
+    }
+  } else if (q.type === "written") {
+    body = `<textarea rows="5" id="text-input" placeholder="Type your answer here...">${state.textInputs[q.id] || ""}</textarea>`;
+  } else if (q.type === "calculation") {
+    body = `<textarea rows="4" id="text-input" placeholder="Show your working and write your final answer...">${state.textInputs[q.id] || ""}</textarea>
+    <div class="hint">Show your working — you'll self-mark this after the quiz.</div>`;
+  }
+
+  const nextDisabled = (!q.type && !answered) ? "disabled" : "";
+  const nextLabel = state.current < questions.length - 1 ? "Next Question →" : "Finish Quiz →";
+
+  return `
+    <div class="header">
+      <span class="header-title">GCSE Physics 2H Revision</span>
+      <span class="header-count">Q${state.current + 1} of ${questions.length}</span>
+    </div>
+    <div class="progress-track"><div class="progress-bar" style="width:${progress}%"></div></div>
+    <span class="badge badge-topic">${q.topic}</span>
+    <span class="badge badge-marks">${q.marks} mark${q.marks > 1 ? "s" : ""}</span>
+    <p class="question">${q.question}</p>
+    ${body}
+    <button class="next-btn" id="next-btn" ${nextDisabled}>${nextLabel}</button>
+    <div class="footer-note">Written & calculation answers are self-marked at the end</div>
+  `;
+}
+
+function renderReview() {
+  const writtenCalcQs = questions.filter(q => q.type === "written" || q.type === "calculation");
+  const unreviewed = writtenCalcQs.filter(q => state.selfMarks[q.id] === undefined).length;
+
+  let items = writtenCalcQs.map(q => {
+    const markBtns = Array.from({length: q.marks + 1}, (_, i) => {
+      const sel = state.selfMarks[q.id] === i ? "selected" : "";
+      return `<button class="mark-btn ${sel}" data-qid="${q.id}" data-mark="${i}">${i}</button>`;
+    }).join("");
+
+    const points = q.markPoints ? `<ul class="mark-points">${q.markPoints.map(p => `<li>✓ ${p}</li>`).join("")}</ul>` : "";
+
+    return `
+      <div class="review-q">
+        <div class="review-label">Q${q.id} · ${q.topic} · ${q.marks} mark${q.marks > 1 ? "s" : ""}</div>
+        <p class="review-question">${q.question}</p>
+        <div class="your-answer">
+          <div class="your-answer-title">Your answer:</div>
+          <div class="your-answer-text">${state.textInputs[q.id] ? state.textInputs[q.id].replace(/\n/g, "<br>") : "<em>No answer given</em>"}</div>
+        </div>
+        <div class="model-answer">
+          <div class="model-answer-title">Model answer:</div>
+          <div class="model-answer-text">${q.modelAnswer}</div>
+          ${points}
+        </div>
+        <div class="self-mark-row">
+          <span class="self-mark-label">Award yourself:</span>
+          ${markBtns}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <h2>Self-Mark Your Answers</h2>
+    <p class="review-intro">Compare your answer to the model answer and award yourself marks honestly.</p>
+    ${items}
+    <button class="finish-btn" id="finish-btn" ${unreviewed > 0 ? "disabled" : ""}>
+      ${unreviewed > 0 ? `Mark ${unreviewed} more question(s) first` : "See My Final Score →"}
+    </button>
+  `;
+}
+
+function renderResults() {
+  let score = 0;
+  const topics = {};
+  questions.forEach(q => {
+    if (!topics[q.topic]) topics[q.topic] = {scored: 0, total: 0};
+    topics[q.topic].total += q.marks;
+    if (q.type === "written" || q.type === "calculation") {
+      const m = state.selfMarks[q.id] || 0;
+      score += m;
+      topics[q.topic].scored += m;
+    } else {
+      if (state.answers[q.id] === q.correct) { score += q.marks; topics[q.topic].scored += q.marks; }
+    }
+  });
+
+  const pct = Math.round((score / totalMarks) * 100);
+  const grade = getGrade(pct);
+  const gradeColor = gradeColors[grade] || "#6b7280";
+
+  const topicRows = Object.entries(topics).map(([topic, {scored, total}]) => {
+    const p = Math.round((scored / total) * 100);
+    const col = p >= 70 ? "#16a34a" : p >= 50 ? "#f59e0b" : "#dc2626";
+    return `
+      <div class="topic-row">
+        <div class="topic-header">
+          <span class="topic-name">${topic}</span>
+          <span class="topic-score" style="color:${col}">${scored}/${total} (${p}%)</span>
+        </div>
+        <div class="topic-track"><div class="topic-fill" style="width:${p}%;background:${col}"></div></div>
+      </div>
+    `;
+  }).join("");
+
+  const weakTopics = Object.entries(topics).filter(([, v]) => v.scored / v.total < 0.6).map(([t]) => t);
+  const weakBox = weakTopics.length > 0 ? `
+    <div class="weak-box">
+      <h3 class="weak-title">🔴 Topics to Revise</h3>
+      <ul class="weak-list">${weakTopics.map(t => `<li>${t}</li>`).join("")}</ul>
+    </div>` : "";
+
+  return `
+    <h1 class="results-title">Your Results</h1>
+    <p class="results-subtitle">GCSE Physics Paper 2H — Revision Quiz</p>
+    <div class="grade-circle" style="background:${gradeColor}">${grade}</div>
+    <div class="score-text">${score} / ${totalMarks} marks (${pct}%)</div>
+    <h2 class="section-title">Topic Breakdown</h2>
+    ${topicRows}
+    ${weakBox}
+    <div class="tips-box">
+      <h3 class="tips-title">📚 Revision Tips</h3>
+      <ul class="tips-list">
+        <li>Practise using the equation booklet — know when to rearrange formulas</li>
+        <li>For 6-mark questions, structure your answer with apparatus → procedure → calculation</li>
+        <li>Show all working in calculations — method marks are awarded even if the final answer is wrong</li>
+        <li>Learn key definitions: electric field, principle of moments, sublimation, electromagnetic induction</li>
+        <li>Round to appropriate significant figures as stated in the question</li>
+      </ul>
+    </div>
+    <button class="restart-btn" id="restart-btn">Restart Quiz</button>
+  `;
+}
+
+function attachEvents() {
+  // MCQ buttons
+  document.querySelectorAll("[data-mcq]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const i = parseInt(btn.dataset.mcq);
+      const q = questions[state.current];
+      state.answers[q.id] = i;
+      state.showExplanation = true;
+      render();
+    });
+  });
+
+  // Text inputs
+  const textInput = document.getElementById("text-input");
+  if (textInput) {
+    textInput.addEventListener("input", () => {
+      state.textInputs[questions[state.current].id] = textInput.value;
+    });
+  }
+
+  // Next button
+  const nextBtn = document.getElementById("next-btn");
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      state.showExplanation = false;
+      if (state.current < questions.length - 1) {
+        state.current++;
+      } else {
+        state.phase = "review";
+      }
+      render();
+    });
+  }
+
+  // Self-mark buttons
+  document.querySelectorAll("[data-mark]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const qid = parseInt(btn.dataset.qid);
+      const mark = parseInt(btn.dataset.mark);
+      state.selfMarks[qid] = mark;
+      render();
+    });
+  });
+
+  // Finish button
+  const finishBtn = document.getElementById("finish-btn");
+  if (finishBtn) {
+    finishBtn.addEventListener("click", () => {
+      state.phase = "results";
+      render();
+    });
+  }
+
+  // Restart button
+  const restartBtn = document.getElementById("restart-btn");
+  if (restartBtn) {
+    restartBtn.addEventListener("click", () => {
+      state = { phase:"quiz", current:0, answers:{}, textInputs:{}, selfMarks:{}, showExplanation:false };
+      render();
+    });
+  }
+}
+
+render();
+</script>
+</body>
+</html>
